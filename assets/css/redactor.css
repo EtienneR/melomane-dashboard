@@ -11,6 +11,7 @@ body .redactor_air {
 	position: absolute;
 	border: 1px solid #ddd;
 	border-bottom: none;
+	z-index: 2;
 }
 
 /*
