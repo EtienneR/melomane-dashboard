@@ -5,7 +5,7 @@ class Model_user extends CI_Model {
 	function login($login, $password)
 	{
 		$this->db->select('id_user, pseudo_user, password_user, email_user, level_user')
-				 ->from('user')
+				 ->from('m_user')
 				 ->where('pseudo_user', $login)
 				 ->where('password_user', MD5($password))
 				 ->where('level_user <> 3')
@@ -18,7 +18,7 @@ class Model_user extends CI_Model {
 	function get_users()
 	{
 		$this->db->select('id_user, pseudo_user, password_user, email_user, level_user')
-				 ->from('user')
+				 ->from('m_user')
 				 ->order_by('id_user', 'ASC');
 
 		$query = $this->db->get();
@@ -28,7 +28,7 @@ class Model_user extends CI_Model {
 	function get_user($id_user, $pseudo_user)
 	{
 		$this->db->select('id_user, pseudo_user, email_user, password_user, level_user');
-		$this->db->from('user');
+		$this->db->from('m_user');
 		if (empty($pseudo_user)):
 		$this->db->where('id_user', $id_user);
 		else:
@@ -43,7 +43,7 @@ class Model_user extends CI_Model {
 	function check_user($id_user, $pseudo_user)
 	{
 		$this->db->select('pseudo_user')
-				 ->from('user')
+				 ->from('m_user')
 				 ->where('id_user <>', $id_user)
 				 ->where('pseudo_user', $pseudo_user)
 				 ->limit(1);
@@ -55,7 +55,7 @@ class Model_user extends CI_Model {
 	function check_email($email_user)
 	{
 		$this->db->select('email_user')
-				 ->from('user')
+				 ->from('m_user')
 				 ->where('email_user', $email_user)
 				 ->limit(1);
 
@@ -66,7 +66,7 @@ class Model_user extends CI_Model {
 	function check_user_password($id_user, $u_old_pass)
 	{
 		$this->db->select('password_user')
-				 ->from('user')
+				 ->from('m_user')
 				 ->where('id_user', $id_user)
 				 ->where('password_user', md5($u_old_pass))
 				 ->limit(1);
@@ -82,14 +82,14 @@ class Model_user extends CI_Model {
 		);
 
 		$this->db->where('email_user', $email_user);
-		$this->db->update('user', $data);
+		$this->db->update('m_user', $data);
 	}
 
 	function get_songs_by_user($id_user)
 	{
-		$this->db->select('user_id_user')
-				 ->from('song')
-				 ->where('user_id_user', $id_user);
+		$this->db->select('fk_id_user')
+				 ->from('m_song')
+				 ->where('fk_id_user', $id_user);
 
 		$query = $this->db->get();
 		return $query; 
@@ -98,9 +98,9 @@ class Model_user extends CI_Model {
 	function get_distinct_playlist_by_user($id_user)
 	{
 		$this->db->distinct()
-				 ->select('user_id_user')
-				 ->from('playlist')
-				 ->where('user_id_user', $id_user);
+				 ->select('fk_id_user')
+				 ->from('m_playlist')
+				 ->where('fk_id_user', $id_user);
 
 		$query = $this->db->get();
 		return $query;
@@ -108,9 +108,9 @@ class Model_user extends CI_Model {
 
 	function get_news_by_user($id_user)
 	{
-		$this->db->select('user_id_user')
-				 ->from('news')
-				 ->where('user_id_user', $id_user);
+		$this->db->select('fk_id_user')
+				 ->from('m_news')
+				 ->where('fk_id_user', $id_user);
 
 		$query = $this->db->get();
 		return $query;
@@ -125,7 +125,7 @@ class Model_user extends CI_Model {
 			'level_user'	=> $level_user
 		);
 
-		$this->db->insert('user', $data);
+		$this->db->insert('m_user', $data);
 	}
 
 	function update_user($pseudo_user, $email_user, $level_user, $id_user)
@@ -137,13 +137,13 @@ class Model_user extends CI_Model {
 		);
 
 		$this->db->where('id_user', $id_user);
-		$this->db->update('user', $data);
+		$this->db->update('m_user', $data);
 	}
 
 	function delete_user($id_user)
 	{
 		$this->db->where('id_user', $id_user)
-				 ->delete('user');
+				 ->delete('m_user');
 	}
 
 	function update_password_user($u_new_pass, $id_user)
@@ -153,7 +153,7 @@ class Model_user extends CI_Model {
 		);
 
 		$this->db->where('id_user', $id_user);
-		$this->db->update('user', $data);
+		$this->db->update('m_user', $data);
 	}
 
 }

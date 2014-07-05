@@ -85,10 +85,20 @@ class Content extends CI_Controller {
 				endif;
 
 				if ($this->form_validation->run() !== FALSE):
+
+					// BEGIN SOUNDCLOUD API
+					if (!empty($id_soundcloud)):
+						$ch = file_get_contents('http://api.soundcloud.com/tracks/'. $id_soundcloud .'.json?client_id=f944e2e1605cbe1de67e7b3c54b3a808');
+						$obj = json_decode($ch);
+						$duration_soundcloud  = $obj->{'duration'};
+						$url_soundcloud = $obj->{'permalink_url'};
+					endif;
+					// END SOUNDCLOUD API
+
 					if (empty($cdate_song)):
 						$cdate_song = unix_to_human(now(), TRUE, 'eu');
 					endif;
-					$this->model_content->create_content($id_user, $title_song, $author_song, $image_song, $tags_song, $state_song, $cdate_song, $id_soundcloud, $id_category);
+					$this->model_content->create_content($id_user, $title_song, $author_song, $image_song, $tags_song, $state_song, $cdate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category);
 					$this->session->set_flashdata('success', 'Musique "' . $title_song . '" ajoutée.');
 					redirect(URL_HOME_CONTENT);
 				endif;
@@ -109,10 +119,18 @@ class Content extends CI_Controller {
 					$data['state_song']	   = $row->state_song;
 					$data['tags_song']	   = $row->tag_song;
 					$data['id_soundcloud'] = $row->id_soundcloud;
-					$data['id_category']   = $row->category_id_category;
+					$data['id_category']   = $row->fk_id_category;
 					$data['title']		   = 'Modifier la musique <em>' . $data['title_song'] . '</em>';
 
 					if ($this->form_validation->run() !== FALSE):
+					// BEGIN SOUNDCLOUD API
+					if (!empty($data['id_soundcloud'])):
+						$ch = file_get_contents('http://api.soundcloud.com/tracks/'. $id_soundcloud .'.json?client_id=f944e2e1605cbe1de67e7b3c54b3a808');
+						$obj = json_decode($ch);
+						$duration_soundcloud  = $obj->{'duration'};
+						$url_soundcloud = $obj->{'permalink_url'};
+					endif;
+					// END SOUNDCLOUD API
 
 						if (!empty($tags_song)):
 							$tags_song = implode(';', $tags_song);

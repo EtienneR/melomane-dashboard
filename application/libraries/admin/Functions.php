@@ -76,7 +76,9 @@ class Functions {
 	function get_all_tags()
 	{
 		$CI =& get_instance();
-		$tags = $CI->model_content->get_tags()->result()['0']->tag;
+		//$tags = $CI->model_content->get_tags()->result()['0']->tag;
+		$tags = $CI->model_content->get_tags()->result();
+		$tags = $tags['0']->tag;
 		$data = array_unique(explode(';', $tags));
 
 		return $data;

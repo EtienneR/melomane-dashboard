@@ -5,7 +5,7 @@ class Model_category extends CI_Model {
 	function get_categories()
 	{
 		$this->db->select('id_category, title_category, description_category, cdate_category, udate_category')
-				 ->from('category')
+				 ->from('m_category')
 				 ->order_by('id_category', 'DESC');
 
 		$query = $this->db->get();
@@ -15,7 +15,7 @@ class Model_category extends CI_Model {
 	function get_category($id_category, $title_category)
 	{
 		$this->db->select('title_category, description_category, cdate_category, udate_category');
-		$this->db->from('category');
+		$this->db->from('m_category');
 		if (empty($title_category)):
 		$this->db->where('id_category', $id_category);
 		else:
@@ -30,7 +30,7 @@ class Model_category extends CI_Model {
 	function check_title($id_category, $title_category)
 	{
 		$this->db->select('title_category')
-				 ->from('category')
+				 ->from('m_category')
 				 ->where('id_category <>', $id_category)
 				 ->where('title_category', $title_category);
 
@@ -48,7 +48,7 @@ class Model_category extends CI_Model {
 			'udate_category'	   => unix_to_human(now(), TRUE, 'eu')
 		);
 
-		$this->db->insert('category', $data);
+		$this->db->insert('m_category', $data);
 	}
 
 	function update_category($title_category, $description_category, $id_category)
@@ -60,13 +60,13 @@ class Model_category extends CI_Model {
 		);
 
 		$this->db->where('id_category', $id_category);
-		$this->db->update('category', $data);
+		$this->db->update('m_category', $data);
 	}
 
 	function delete_category($id_category)
 	{
 		$this->db->where('id_category', $id_category)
-				 ->delete('category');
+				 ->delete('m_category');
 	}
 
 }
