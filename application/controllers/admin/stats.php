@@ -5,7 +5,7 @@ class Stats extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('model_category', 'model_content', 'model_user', 'model_stats'));
+		$this->load->model(array('model_category', 'model_content', 'model_user', 'model_tag', 'model_stats'));
 		$this->load->library(array('admin/functions', 'session'));
 		$this->load->helper(array('form', 'functions', 'text'));
 		define('URL_LAYOUT'      , 'admin/view_dashboard');

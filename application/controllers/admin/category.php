@@ -5,7 +5,7 @@ class Category extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('model_content', 'model_category'));
+		$this->load->model(array('model_content', 'model_category','model_tag'));
 		$this->load->library(array('admin/functions', 'session'));
 		$this->load->helper(array('form', 'functions', 'text'));
 		define('URL_LAYOUT'      , 'admin/view_dashboard');
@@ -68,12 +68,12 @@ class Category extends CI_Controller {
 
 				// Category exists
 				if ($get_content->num_rows() == 1):
-					$data['page']  		   = 'edit_category';
-					$data['content']	   = $this->model_content->get_content_by_category($id_category);
+					$data['page']  		   		  = 'edit_category';
+					$data['content']			  = $this->model_content->get_content_by_category($id_category);
 					$row 						  = $get_content->row();
 					$data['title_category']	   	  = $row->title_category;
 					$data['description_category'] = $row->description_category;
-					$data['title'] 		   		  = 'Modifier la catégorie ' . $data['title_category'];
+					$data['title'] 		   		  = 'Modifier la catégorie <em>' . $data['title_category'] . '</em>';
 
 					if($this->form_validation->run() !== FALSE):
 						$this->model_category->update_category($title_category, $description_category, $id_category);

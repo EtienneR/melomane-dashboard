@@ -27,26 +27,21 @@
 					</a>
 				</td>
 				<td>
-					<a href="<?php echo base_url('admin/content/a?q=' . $row->author_song); ?>" title="Afficher toutes les musiques de cette auteur">
-						<?php echo $row->author_song; ?>
+					<a href="<?php echo base_url('admin/content/a?q=' . $row->artist_song); ?>" title="Afficher toutes les musiques de cette auteur">
+						<?php echo $row->artist_song; ?>
 					</a>
 				</td>
 				<td>
+
+
 					<a href="<?php echo base_url('admin/content/c?q=' . $row->title_category); ?>
 					" title="Afficher toutes les musiques de cette catégorie">
 					<?php echo $row->title_category; ?></a></td>
-					<?php 
-						if (!empty($row->tag_song)):
-							$tags = explode(';', $row->tag_song);
-							echo '<td>';
-							foreach ($tags as $tag):
-								if (!empty($tag)):
-									echo '<a href="'.base_url('admin/content').'/t?q=' . $tag . '" title="Afficher toutes les musiques avec ce tag">'. $tag . '</a> ';
-								endif;
-							endforeach;
-							echo '</td>';
-						endif;
-					?>
+				<td>
+					<?php foreach ($this->model_content->get_tags($row->id_song)->result() as $tag): ?>
+						<a href="<?php echo base_url('admin/content/t?q=' . $tag->name_tag . ' '); ?>"><?php echo $tag->name_tag .' '; ?></a>
+					<?php endforeach; ?>
+				</td>
 				<?php if ($page == 'home' or $page == 'artists'): ?>
 				<td>
 					<?php if ($row->id_user == $user_data['id_user']): ?>

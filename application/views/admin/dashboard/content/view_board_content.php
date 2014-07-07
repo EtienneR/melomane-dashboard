@@ -26,7 +26,7 @@
 					<a href="<?php echo base_url('admin/content/edit/' . $row->id_song); ?>" title="Modifier"><?php echo $row->title_song; ?></a>
 				</td>
 				<td>
-					<a href="<?php echo base_url('admin/content/a?q=' . $row->author_song); ?>" title="Afficher toutes les musiques de cette auteur"><?php echo $row->author_song; ?>
+					<a href="<?php echo base_url('admin/content/a?q=' . $row->artist_song); ?>" title="Afficher toutes les musiques de cette auteur"><?php echo $row->artist_song; ?>
 					</a>
 				</td>
 				<td>

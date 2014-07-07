@@ -1,51 +1,65 @@
-<?php 
-	echo form_open_multipart(base_url('admin/medias/upload'));
-?>
-	<div class="form-group">
-		<input class="btn" type="file" name="userfile" size="20" />
-		<input class="btn btn-primary" type="submit" value="Envoyer" />
-	</div>
-</form>
+<?php if ($query->num_rows() > 0): ?>
+<div class="table-responsive">
+	<table class="table table-hover tablesorter" id="keywords">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Tag</th>
+				<th>Image</th>
+				<th>Nb articles</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach ($query->result() as $row): ?>
+			<tr>
+				<td>
+					<?php echo $row->id_bg; ?>
+				</td>
+				<td>
+					<a href="<?php echo base_url('admin/medias/edit/' . $row->id_bg); ?>" title="Modifier">
+						<?php echo $row->tag_bg; ?>
+					</a>
+				</td>
+				<td>
+					<?php echo img_thumb_bg($row->image_bg); ?>
+				</td>
+				<td>
+					<?php echo ($this->model_content->get_content_by_bg($row->id_bg)->num_rows); ?>
+				</td>
+				<td>
+					<a href="<?php echo base_url('admin/medias/edit/' . $row->id_bg); ?>" title="Modifier">
+						<i class="glyphicon glyphicon-pencil"></i>
+					</a>
+				</td>
+				<td>
+					<a href="<?php echo base_url('admin/medias/delete/' . $row->id_bg); ?>" onclick="return deleteConfirm()" title="Supprimer">
+						<i class="glyphicon glyphicon-trash"></i>
+					</a>
+				</td>
+			</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table><!-- end .table .table-hover -->
+</div><!-- end .table-responsive -->
 
-<div class="row">
-	<?php if (!empty($query)): ?>
-	<?php foreach ($query as $row): ?>
-	<div class="col-sm-6 col-md-2">
-		<div class="thumbnail">
-			<?php // faire un var_dump($query) pour comprendre
-				$var = $row['relative_path'];
-				$var = strstr($var, 'assets');
-				$var = str_replace("\\","/", $var);
-			?>
-			<a href="<?php echo base_url('assets/img/' . str_replace('_thumb', '', $row['name'])); ?>">
-				<img src="<?php echo base_url($var . '/' . $row['name']); ?>" alt="<?php echo $row['name']; ?>" width="150px" />
-			</a>
-			<div class="caption">
-				<h6 class="text-center">
-					<?php echo substr($row['name'], 0, 25); ?>
-				</h6>
-				<p class="text-center">
-					<a href="?delete=<?php echo $row['name']; ?>" onclick="return deleteConfirm()" class="btn btn-default" role="button" title="Supprimer"><i class="glyphicon glyphicon-trash"></i></a>
-				</p>
-			</div>
-		</div>
-	</div>
-	<?php endforeach; ?>
+<p class="text-right">
+	<em><?php echo $query->num_rows(); ?> background(s)</em>
+</p>
 
-	<script>
-		function deleteConfirm() {
-			var a = confirm("Etes-vous sur de vouloir supprimer cette image ?!");
-			if (a){
-				return true;
-			}
-			else{
-				return false;
-			}
+<script>
+	function deleteConfirm() {
+		var a = confirm("Etes-vous sur de vouloir supprimer ce background ?!");
+		if (a){
+			return true;
 		}
-	</script>
+		else{
+			return false;
+		}
+	}
+</script>
 
-	<?php else: ?>
-		<p>Aucune image n'est disponible</p>
-	<?php endif;?>
-	
-</div>
+<?php else: ?>
+	<p>Aucun background créé</p>
+<?php endif; ?>

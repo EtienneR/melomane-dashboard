@@ -5,9 +5,9 @@ class Content extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('model_category', 'model_content', 'model_user'));
-		$this->load->library(array('admin/functions', 'session'));
-		$this->load->helper(array('form', 'functions', 'text'));
+		$this->load->model(array('model_category', 'model_content', 'model_tag', 'model_user'));
+		$this->load->library(array('admin/functions', 'form_validation', 'session'));
+		$this->load->helper(array('file', 'form', 'functions', 'text'));
 		define('URL_LAYOUT'      , 'admin/view_dashboard');
 		define('URL_HOME_CONTENT', 'admin/content');
 		session_start();
@@ -42,49 +42,66 @@ class Content extends CI_Controller {
 	{
 		if ($this->functions->get_loged()):
 
-			$this->load->library('form_validation');
-			$this->load->helper('file');
-			$this->load->model('model_category');
-
 			$data['user_data'] = $this->functions->get_user_data();
 			$data['users']	   = $this->model_user->get_users();
-			$data['images']	   = get_dir_file_info('./assets/img/thumb', $top_level_only = FALSE);
+			$data['images']	   = get_dir_file_info('./assets/img/bg/thumb', $top_level_only = FALSE);
 			$data['authors']   = $this->model_content->get_authors();
 			$data['tags']	   = $this->functions->get_all_tags();
 			$data['categories']= $this->functions->get_all_categories();
 
 			$this->form_validation->set_rules('title_song', 'Titre', 'trim|required|callback_check_content');
-			$this->form_validation->set_rules('author_song', 'Auteur', 'trim|required');
-			$this->form_validation->set_rules('image_song', 'Image d\'illustration', 'trim');
+			$this->form_validation->set_rules('artist_song', 'Auteur', 'trim|required');
+			$this->form_validation->set_rules('punchline_song', 'Punchline', 'trim|required');
 			$this->form_validation->set_rules('state_song', 'Etat', 'required');
-			//$this->form_validation->set_rules('tags_song', 'Tag', 'required');
+			$this->form_validation->set_rules('tag_song', 'Tag');
 			$this->form_validation->set_rules('category', 'Catégorie', 'required');
+			$this->form_validation->set_rules('id_bg', 'Image de fond', 'required');
 
-			$title_song	   = $this->input->post('title_song');
-			$author_song   = $this->input->post('author_song');
-			$image_song	   = $this->input->post('image_song');
-			$state_song	   = $this->input->post('state_song');
-			$cdate_song	   = $this->input->post('cdate_song');
-			$tags_song	   = $this->input->post('tags_song'); // Tableau
-			$id_soundcloud = $this->input->post('id_soundcloud');
-			$id_category   = $this->input->post('category');
+			$title_song		 = $this->input->post('title_song');
+			$artist_song	 = $this->input->post('artist_song');
+			$punchline_song  = $this->input->post('punchline_song');
+			$state_song		 = $this->input->post('state_song');
+			$cdate_song		 = $this->input->post('cdate_song');
+			$tag_song		 = $this->input->post('tag_song');
+			$id_soundcloud 	 = $this->input->post('id_soundcloud');
+			$id_category	 = $this->input->post('category');
+			$id_bg			 = $this->input->post('id_bg');
+			$userfile		 = $this->input->get_post('userfile');
+
+			$data['img_bg'] = $this->model_content->get_all_bg_image();
+
+			$config['upload_path']	 = './assets/img/song/';
+			$config['allowed_types'] = 'gif|jpg|jpeg|png';
+			$config['max_size']		 = '1024';
+			$config['max_width']	 = '2048';
+			$config['max_height']	 = '2048';
+
+			$this->load->library('upload', $config);
 
 			// Add a content
 			if ($this->uri->total_segments() == 3):
 				$data['page']  = 'add_content';
 				$data['title'] = 'Ajouter une musique';
 
-				$get_tags = $this->model_content->get_tags()->result();
-				$data['tags_json'] = json_encode($get_tags[0]->tag);
-
 				$id_user = $data['user_data']['id_user'];
 
-				// Récupération des tags cochés
-				if (!empty($tag_song)):
-					$tags_song = implode(';', $tag_song);
-				endif;
+				if (!$this->upload->do_upload('image')):
+					$error = array($this->upload->display_errors());
+					$this->session->set_flashdata('alert', strip_tags($error['0'], 'p'));
 
-				if ($this->form_validation->run() !== FALSE):
+				elseif ($this->form_validation->run() !== FALSE && $this->upload->do_upload()):
+					$upload_data = $this->upload->data();
+					// Resize image
+					$config['image_library']  = 'gd2';
+					$config['source_image']	  = $upload_data["full_path"];
+					$config['create_thumb']	  = FALSE;
+					$config['new_image']	  = './assets/img/song/thumb/';
+					$config['maintain_ratio'] = TRUE;
+					$config['width']		  = 150;
+					$config['height']		  = 150;
+					$this->load->library('image_lib', $config);
+					$this->image_lib->resize();
+					$image_song = $upload_data['file_name'];
 
 					// BEGIN SOUNDCLOUD API
 					if (!empty($id_soundcloud)):
@@ -98,9 +115,23 @@ class Content extends CI_Controller {
 					if (empty($cdate_song)):
 						$cdate_song = unix_to_human(now(), TRUE, 'eu');
 					endif;
-					$this->model_content->create_content($id_user, $title_song, $author_song, $image_song, $tags_song, $state_song, $cdate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category);
+
+					$this->model_content->create_content($id_user, $title_song, $artist_song, $punchline_song, $image_song, $state_song, $cdate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category, $id_bg);
+
+					// For tags
+					$id_song = $this->db->insert_id();
+					foreach ($tag_song as $row):
+						$tags = array(
+							'fk_id_song' => $id_song,
+							'fk_id_tag'  => $row
+						);
+						$this->db->insert('m_songtags', $tags);
+					endforeach;
+
 					$this->session->set_flashdata('success', 'Musique "' . $title_song . '" ajoutée.');
+
 					redirect(URL_HOME_CONTENT);
+
 				endif;
 
 			else:
@@ -113,44 +144,67 @@ class Content extends CI_Controller {
 					$udate_song = (isset($_POST['udate_song']))?true:false;
 
 					$row				   = $get_content->row();
+					$data['id_song']	   = $row->id_song;
 					$data['title_song']	   = $row->title_song;
-					$data['author_song']   = $row->author_song;
+					$data['artist_song']   = $row->artist_song;
+					$data['punchline_song']= $row->punchline_song;
 					$data['image_song']	   = $row->image_song;
 					$data['state_song']	   = $row->state_song;
-					$data['tags_song']	   = $row->tag_song;
 					$data['id_soundcloud'] = $row->id_soundcloud;
 					$data['id_category']   = $row->fk_id_category;
+					$data['id_bg']		   = $row->fk_id_bg;
 					$data['title']		   = 'Modifier la musique <em>' . $data['title_song'] . '</em>';
 
 					if ($this->form_validation->run() !== FALSE):
-					// BEGIN SOUNDCLOUD API
-					if (!empty($data['id_soundcloud'])):
-						$ch = file_get_contents('http://api.soundcloud.com/tracks/'. $id_soundcloud .'.json?client_id=f944e2e1605cbe1de67e7b3c54b3a808');
-						$obj = json_decode($ch);
-						$duration_soundcloud  = $obj->{'duration'};
-						$url_soundcloud = $obj->{'permalink_url'};
-					endif;
-					// END SOUNDCLOUD API
 
-						if (!empty($tags_song)):
-							$tags_song = implode(';', $tags_song);
+						// BEGIN SOUNDCLOUD API
+						if (!empty($data['id_soundcloud'])):
+							$ch = file_get_contents('http://api.soundcloud.com/tracks/'. $id_soundcloud .'.json?client_id=f944e2e1605cbe1de67e7b3c54b3a808');
+							$obj = json_decode($ch);
+							$duration_soundcloud  = $obj->{'duration'};
+							$url_soundcloud = $obj->{'permalink_url'};
 						endif;
+						// END SOUNDCLOUD API
 
-						if ($data['title_song'] == $title_song 
-							&& $data['author_song'] == $author_song
-							&& $data['image_song'] == $image_song
-							&& $data['state_song'] == $state_song
-							&& $data['tags_song'] == $tags_song
-							&& $data['id_soundcloud'] == $id_soundcloud
-							&& $data['id_category'] == $id_category
-							):
-
+						// If different image
+						if (!empty($_FILES['image']['name']) && $_FILES['image']['name'] !== $data['image_bg']):
+							if (!$this->upload->do_upload('image')):
+								$error = array($this->upload->display_errors());
+								$this->session->set_flashdata('alert', strip_tags($error['0'], 'p'));
+							elseif ($this->upload->do_upload('image')):
+								$upload_data = $this->upload->data();
+								// Resize image
+								$config['image_library']  = 'gd2';
+								$config['source_image']	  = $upload_data["full_path"];
+								$config['create_thumb']	  = FALSE;
+								$config['new_image']	  = './assets/img/song/thumb/';
+								$config['maintain_ratio'] = TRUE;
+								$config['width']		  = 150;
+								$config['height']		  = 150;
+								$this->load->library('image_lib', $config);
+								$this->image_lib->resize();
+								$image_song = $upload_data['file_name'];
+							endif;
 						else:
-
-							$this->model_content->update_content($title_song, $author_song, $image_song, $tags_song, $state_song, $udate_song, $id_soundcloud, $id_category, $id_song);
-							$this->session->set_flashdata('success', 'Musique "' . $title_song . '" modifiée.');
+							$image_song = $data['image_song'];
 						endif;
+
+						$this->model_content->update_content($title_song, $artist_song, $punchline_song, $image_song, $state_song, $udate_song, $id_soundcloud, $id_category, $id_bg, $id_song);
+
+						// For tags
+						$this->model_content->delete_content_songtags($id_song);
+						foreach ($tag_song as $row):
+							$tags = array(
+								'fk_id_song' => $id_song,
+								'fk_id_tag'  => $row
+							);
+							$this->db->insert('m_songtags', $tags);
+						endforeach;
+
+						$this->session->set_flashdata('success', 'Musique "' . $title_song . '" modifiée.');
+
 						redirect(URL_HOME_CONTENT);
+
 					endif;
 
 				// Content unknown
@@ -186,6 +240,8 @@ class Content extends CI_Controller {
 
 			// Content exists
 			if ($this->model_content->get_content($id)->num_rows() == 1):
+				// Delete the tag(s) association
+				$this->model_content->delete_content_songtags($id);
 				$this->model_content->delete_content($id);
 				$this->session->set_flashdata('success', 'L\'article a bien été supprimé');
 				redirect(base_url('admin'));
@@ -298,6 +354,36 @@ class Content extends CI_Controller {
 		$data['tags_json'] = "tag_song,soul,corse,tag_song,soul,rap,rap,blues,rap,celtic,corse";
 
 		echo json_encode($data['tags_json']);
+	}
+
+	public function upload($error = array())
+	{
+		if ($this->functions->get_loged()):
+			$config['upload_path']	 = './assets/img/song/';
+			$config['allowed_types'] = 'gif|jpg|jpeg|png';
+			$config['max_size']		 = '1024';
+			$config['max_width']	 = '2048';
+			$config['max_height']	 = '2048';
+
+			$this->load->library('upload', $config);
+
+			if (!$this->upload->do_upload()):
+				$error = array($this->upload->display_errors());
+			else:
+				// Resize image
+				$upload_data = $this->upload->data();
+				$config['image_library']  = 'gd2';
+				$config['source_image']   = $upload_data["full_path"];
+				$config['create_thumb']   = FALSE;
+				$config['new_image']	  = './assets/img/song/thumb/';
+				$config['maintain_ratio'] = TRUE;
+				$config['width']		  = 150;
+				$config['height']		  = 150;
+				$this->load->library('image_lib', $config);
+				$this->image_lib->resize();
+			endif;
+
+		endif;
 	}
 
 /*	// Ajax request

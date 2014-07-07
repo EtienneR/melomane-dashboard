@@ -16,7 +16,7 @@
 
 	<?php if ($page == 'edit_category'): ?>
 		<?php if ($content->num_rows > 0): ?>
-			<h3>Musiques(s) associé(s) à cette catégorie</h3>
+			<h3><?php echo $content->num_rows(); ?> Musiques(s) associé(s) à cette catégorie</h3>
 			<ul class="unstyled">
 			<?php foreach ($content->result() as $row): ?>
 				<li><a href="<?php echo base_url('admin/content/edit/' . $row->id_song); ?>"><?php echo $row->title_song; ?></a></li>

@@ -39,13 +39,16 @@
 					<li <?php if ($page == 'categories' or $page == 'add_category' or $page == 'edit_category'){ echo "class='active'"; }; ?>>
 						<a href="<?php echo base_url('admin/category'); ?>">Catégories</a>
 					</li>
+					<li <?php if ($page == 'tag' or $page == 'add_tag' or $page == 'edit_tag'){ echo "class='active'"; }; ?>>
+						<a href="<?php echo base_url('admin/tag'); ?>">Tags</a>
+					</li>
 					<li <?php if ($page == 'users' or $page == 'add_user' or $page == 'edit_user'){ echo "class='active'"; }; ?>>
 						<a href="<?php echo base_url('admin/user'); ?>">Utilisateurs</a>
 					</li>
 					<li <?php if ($page == 'stats'){ echo "class='active'"; }; ?>>
 						<a href="<?php echo base_url('admin/stats'); ?>">Statistiques</a>
 					</li>
-					<li <?php if ($page == 'gallery'){ echo "class='active'"; }; ?>>
+					<li <?php if ($page == 'gallery' or $page == 'add_bg' or $page == 'edit_bg'){ echo "class='active'"; }; ?>>
 						<a href="<?php echo base_url('admin/medias'); ?>">Galerie</a>
 					</li>
 				</ul><!-- end .nav navbar-nav -->
@@ -81,9 +84,6 @@
 					<button onClick="window.location.href='<?php echo base_url('admin/news/edit'); ?>'" class="btn btn-success">
 						<i class="glyphicon glyphicon-plus"></i> Ajouter une news
 					</button>
-					<button onClick="window.location.href='<?php echo base_url('admin/category/edit'); ?>'" class="btn">
-						<i class="glyphicon glyphicon-plus"></i> Ajouter une catégorie
-					</button>
 					<?php if ($user_data['level'] == 0): ?>
 					<button onClick="window.location.href='<?php echo base_url('admin/user/edit'); ?>'" class="btn btn-primary">
 						<i class="glyphicon glyphicon-plus"></i> Ajouter un utilisateur
@@ -100,7 +100,6 @@
 						Mes musiques (<?php echo ($this->model_content->get_content_by_user($user_data['id_user'], '')->num_rows); ?>)
 					</button>
 					Mes news
-
 					<?php else: ?>
 					<button onClick="window.location.href='<?php echo base_url('admin/content'); ?>'" class="btn btn-link">
 						Toutes les musiques
@@ -108,27 +107,43 @@
 					<?php endif; ?>
 				</div>
 				<?php if (!empty($categories) && $categories->num_rows() > 0): ?>
-				<p><br /><i class="glyphicon glyphicon-tag"></i> Catégories (<?php echo $categories->num_rows(); ?>)</p>
+				<p>
+					<br /><i class="glyphicon glyphicon-tag"></i> Catégories (<?php echo $categories->num_rows(); ?>)
+					<a href="<?php echo base_url('admin/category/edit'); ?>" title="Ajouter un tag">
+						<i class="glyphicon glyphicon-plus"></i>
+					</a>
+				</p>
 				<ul class="list-unstyled">
 
 				<?php foreach ($categories->result() as $category): ?>
 					<li>
-						<a href="<?php echo base_url('admin/content/c?q=' . $category->title_category); ?>"><?php echo $category->title_category; ?></a>
+						<a href="<?php echo base_url('admin/content/c?q=' . $category->title_category); ?>">
+							<?php echo $category->title_category; ?>
+						</a>
 					</li>
 				<?php endforeach; ?>
 				</ul>
 				<?php endif; ?>
 
-				<p><br /><i class="glyphicon glyphicon-tags"></i> Tags (<?php echo count($tags)-1; ?>)</p>
-				<ul class="list-unstyled">
-				<?php foreach ($tags as $tag): ?>
-					<?php if (!empty($tag)): ?>
-					<li>
-						<?php echo '<a href="' . base_url('admin/content') . '/t?q=' . $tag . ' ">'. $tag . '</a> '; ?>
-					</li>
-					<?php endif; ?>
-				<?php endforeach; ?>
-				</ul>
+				<?php if (!empty($tags) && $tags->num_rows() > 0): ?>
+					<p>
+						<br /><i class="glyphicon glyphicon-tags"></i> Tags (<?php echo $tags->num_rows(); ?>)
+						<a href="<?php echo base_url('admin/tag/edit'); ?>" title="Ajouter un tag">
+							<i class="glyphicon glyphicon-plus"></i>
+						</a>
+					</p>
+					<ul class="list-unstyled">
+					<?php foreach ($tags->result() as $tag): ?>
+						<?php if (!empty($tag)): ?>
+						<li>
+							<?php echo '<a href="' . base_url('admin/content') . '/t?q=' . $tag->id_tag . ' ">'. $tag->name_tag . '</a> '; ?>
+						</li>
+						<?php endif; ?>
+					<?php endforeach; ?>
+					</ul>
+				<?php else: ?>
+					<p><a href="<?php echo base_url('admin/tag/edit'); ?>">Ajouter un tag</a>
+				<?php endif; ?>
 
 			</section>
 
@@ -190,6 +205,15 @@
 				$this->load->view('admin/dashboard/categories/view_edit_category');
 				break;
 
+			case 'tag':
+				$this->load->view('admin/dashboard/tags/view_listing_tags');
+				break;
+
+			case 'add_tag':
+			case 'edit_tag':
+				$this->load->view('admin/dashboard/tags/view_edit_tag');
+				break;
+
 			case 'users':
 				$this->load->view('admin/dashboard/users/view_listing_users');
 				break;
@@ -210,6 +234,12 @@
 			case 'gallery':
 				$this->load->view('admin/dashboard/gallery/view_listing_gallery');
 				break;
+
+			case 'add_bg':
+			case 'edit_bg':
+				$this->load->view('admin/dashboard/gallery/view_edit_gallery');
+				break;
+
 
 			default:
 				$this->load->view('admin/dashboard');

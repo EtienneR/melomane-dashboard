@@ -23,6 +23,12 @@ $route['admin/category/edit']		   = 'admin/category/edit';
 $route['admin/category/edit/(:num)']   = 'admin/category/edit/$1';
 $route['admin/category/delete/(:num)'] = 'admin/category/delete/$1';
 
+# Admin tags
+$route['admin/tag']			   	  = 'admin/tag';
+$route['admin/tag/edit']		  = 'admin/tag/edit';
+$route['admin/tag/edit/(:num)']   = 'admin/tag/edit/$1';
+$route['admin/tag/delete/(:num)'] = 'admin/tag/delete/$1';
+
 # Admin news
 $route['admin/news']			    = 'admin/news';
 $route['admin/news/edit']		    = 'admin/news/edit';
@@ -39,7 +45,10 @@ $route['admin/user/change_password'] = 'admin/user/change_password';
 $route['admin/user/(:num)']			 = 'admin/user/author/$1';
 
 # ADMIN media
-$route['admin/medias']		  = 'admin/medias';
+$route['admin/medias']				 = 'admin/medias';
+$route['admin/medias/edit']			 = 'admin/medias/edit';
+$route['admin/medias/edit/(:num)']   = 'admin/medias/edit/$1';
+$route['admin/medias/delete/(:num)'] = 'admin/medias/delete/$1';
 $route['admin/medias/upload'] = 'admin/medias/upload';
 
 # ADMIN stats
