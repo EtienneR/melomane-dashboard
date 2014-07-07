@@ -112,11 +112,11 @@
 	<div class="row">
 		<div class="col-md-4 form-group">
 			<label for="vendor_song">Lien achat</label>
-			<input type="text" class="form-control" name="vendor_song" value="<?php echo $tag->vendor_song; ?>" <?php if (isset($vendor_song) && $tag->vendor_song == $vendor_song or set_value('tag_song') == $tag->vendor_song) echo 'checked="checked"'; ?> />
+			<input type="text" class="form-control" name="vendor_song" value="<?php if (isset($vendor_song)) echo $vendor_song; ?>" />
 		</div><!-- end .form-group -->
 	</div><!-- end .row -->
 
-	<div class="row">
+	<div class="form_group">
 		<p>Image de fond</p>
 		<?php foreach ($img_bg->result() as $row): ?>
 			<input type="radio" name="id_bg" id="<?php echo $row->id_bg; ?>" value="<?php echo $row->id_bg; ?>" <?php if ($page == 'edit_content' && isset($img_bg) && $row->id_bg == $id_bg) echo 'checked="checked"'; ?> />
@@ -125,7 +125,7 @@
 				<br /><?php echo $row->tag_bg; ?>
 			</label>
 		<?php endforeach; ?>
-	</div><!-- end .row -->
+	</div><!-- end .form_control -->
 
 	<input type="submit" class="btn btn-success" value="<?php if ($page == 'add_content') echo 'Ajouter'; else echo 'Modifier'; ?>" />
 

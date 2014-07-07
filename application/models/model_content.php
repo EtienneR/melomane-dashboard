@@ -96,7 +96,7 @@ class Model_content extends CI_Model {
 
 	function get_content($id_song, $title_song)
 	{
-		$this->db->select('id_song, title_song, artist_song, punchline_song, image_song, vendor_song state_song, cdate_song, udate_song, id_soundcloud, pseudo_user, fk_id_user, fk_id_category, fk_id_bg');
+		$this->db->select('id_song, title_song, artist_song, punchline_song, image_song, vendor_song, state_song, cdate_song, udate_song, id_soundcloud, pseudo_user, fk_id_user, fk_id_category, fk_id_bg');
 		$this->db->from('m_song');
 		$this->db->join('m_user', 'm_user.id_user = m_song.fk_id_user');
 		if (empty($c_title)):
