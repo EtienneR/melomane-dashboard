@@ -6,10 +6,12 @@
 		<meta name="description" content="<?php echo $title ; ?>" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<?php echo css_url('bootstrap.min'); ?>
-		<?php 
+		<?php
 			if ($page == 'add_content' or $page == 'edit_content' or $page =='add_news' or $page == 'edit_news'):
-				echo css_url('redactor');
 				echo css_url('toggle-switch');
+			endif;
+			if ($page =='add_news' or $page == 'edit_news'):
+				echo css_url('redactor');
 			endif;
 		?>
 	</head>
@@ -89,6 +91,9 @@
 						<i class="glyphicon glyphicon-plus"></i> Ajouter un utilisateur
 					</button>
 					<?php endif; ?>
+					<button onClick="window.location.href='<?php echo base_url('admin/medias/edit'); ?>'" class="btn btn">
+						<i class="glyphicon glyphicon-plus"></i> Ajouter un background
+					</button>
 					<?php if ($page == 'tags' or $page == 'artists'): ?>
 					<button onClick="window.location.href='<?php echo base_url('admin/content'); ?>'" class="btn btn-link">
 						Toutes les musiques
@@ -276,19 +281,20 @@
 
 	<script>
 		$('#datetimepicker input').datepicker({
+
 	});
 	</script>
 
 	<?php
 		endif;
-		if ($page == 'add_content' || $page == 'edit_content'):
+		if ($page == 'add_news' || $page == 'edit_news'):
 			echo js_url('redactor.min');
 	?>
 
 	<script>
 		$(function()
 		{
-			$('#description_song').redactor();
+			$('#content_news').redactor();
 		});
 	</script>
 	<script>

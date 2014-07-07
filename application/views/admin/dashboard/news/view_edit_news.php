@@ -1,6 +1,6 @@
 <div class="col-md-9">
 <?php 
-	echo form_open(base_url(uri_string()));
+	echo form_open_multipart(base_url(uri_string()));
 ?>
 
 	<div class="row">
@@ -12,7 +12,10 @@
 					foreach ($array_state as $key => $value): 
 				?>
 				<?php set_value('c_state'); ?>
-					<input id="<?php echo strtolower($value); ?>" name="state_news" type="radio" value="<?php echo $key; ?>" <?php if (isset($state_news) and $state_news == $key or set_value('c_state') == $key) echo 'checked="checked"'; ?> required />
+					<input id="<?php echo strtolower($value); ?>" name="state_news" type="radio" value="<?php echo $key; ?>" 
+					<?php if (isset($state_news) && $state_news == $key) echo "checked";
+						  if (isset($_REQUEST['state_news'])) echo "checked";  
+					?> />
 					<label for="<?php echo strtolower($value); ?>" onclick="">
 						<?php echo $value; ?>
 					</label>
@@ -22,13 +25,32 @@
 		</div><!-- end .form-group -->
 
 		<div class="form-group">
+			<?php if ($page == 'edit_news'): ?>
+			<p>Image actuelle :
+				<br /><?php echo img_thumb_news($image_news); ?>
+			</p>
+			<?php endif; ?>
+			<?php if (isset($image_news)) echo $image_news; ?>
+			<input type="file" name="image" size="20" />
+		</div><!-- end .form-group -->
+
+
+		<div class="form-group">
 			<label for="title_news">Titre de la news :</label>
-			<input type="text" class="form-control" id="title_news" name="title_news" value="<?php if (isset($title_news)) echo $title_news; echo set_value('title_news'); ?>" required />
+			<input type="text" class="form-control" id="title_news" name="title_news" value="<?php 
+				if (isset($title_news)) echo $title_news;
+				if (isset($_REQUEST['title_news'])) echo $_REQUEST['title_news'];  
+			?>" />
 		</div><!-- end .form-group -->
 
 		<div class="form-group">
 			<label for="content_news">Contenu :</label>
-			<textarea type="text" id="content_news" class="form-control" name="content_news" required><?php if (isset($content_news)) echo $content_news; echo set_value('content_news'); ?></textarea>
+			<textarea type="text" class="form-control" id="content_news" name="content_news">
+			<?php 
+				if (isset($content_news)) echo $content_news;
+				if (isset($_REQUEST['content_news'])) echo $_REQUEST['content_news'];  
+			?>
+			</textarea>
 		</div><!-- end .form-group -->
 
 		<div class="form-group">

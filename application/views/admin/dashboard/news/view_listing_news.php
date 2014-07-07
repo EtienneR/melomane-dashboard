@@ -30,17 +30,17 @@
 							</a>
 						</td>
 						<td>
-							<?php echo character_limiter($row->content_news, 64); ?>
+							<?php echo character_limiter(strip_tags($row->content_news, 64)); ?>
 						</td>
 						<td>
 							<?php echo date("d/m/Y à H:i:s", strtotime($row->cdate_news)); ?>
 						</td>
 						<?php if ($row->cdate_news !== $row->udate_news): ?>
-							<td>
-								<?php echo date("d/m/Y à H:i:s", strtotime($row->udate_news)); ?>
-							</td>
+						<td>
+							<?php echo date("d/m/Y à H:i:s", strtotime($row->udate_news)); ?>
+						</td>
 						<?php else: ?>
-							<td class="text-center">-</td>
+						<td class="text-center">-</td>
 						<?php endif; ?>
 						<td>
 							<?php 
@@ -65,7 +65,8 @@
 							</a>
 						</td>
 						<td>
-							<a href="<?php echo base_url('admin/news/delete/' . $row->id_news); ?>" onclick="return deleteConfirm()" title="Supprimer"><i class="glyphicon glyphicon-trash"></i>
+							<a href="<?php echo base_url('admin/news/delete/' . $row->id_news); ?>" onclick="return deleteConfirm()" title="Supprimer">
+								<i class="glyphicon glyphicon-trash"></i>
 							</a>
 						</td>
 						<td>

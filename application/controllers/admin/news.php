@@ -6,14 +6,18 @@ class News extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model(array('model_category', 'model_content', 'model_news', 'model_tag', 'model_user'));
-		$this->load->library(array('admin/functions', 'session'));
+		$this->load->library(array('admin/functions', 'form_validation', 'session'));
 		$this->load->helper(array('form', 'functions', 'text'));
 		define('URL_LAYOUT'   , 'admin/view_dashboard');
 		define('URL_HOME_NEWS', 'admin/news');
 		session_start();
+
 		if (isset($_GET["profiler"])):
 			$this->output->enable_profiler(TRUE);
 		endif;
+
+		setLocale(LC_TIME, 'fr_FR', 'FRA');
+		date_default_timezone_set('Europe/Berlin');
 	}
 
 	// Display all news
@@ -40,8 +44,6 @@ class News extends CI_Controller {
 	{
 		if ($this->functions->get_loged()):
 
-			$this->load->library('form_validation');
-
 			$data['user_data']  = $this->functions->get_user_data();
 			$data['categories']	= $this->functions->get_all_categories();
 			$data['tags']		= $this->functions->get_all_tags();
@@ -54,6 +56,14 @@ class News extends CI_Controller {
 			$content_news = $this->input->post('content_news');
 			$state_news	  = $this->input->post('state_news');
 
+			$config['upload_path']	 = './assets/img/news/';
+			$config['allowed_types'] = 'gif|jpg|jpeg|png';
+			$config['max_size']		 = '1024';
+			$config['max_width']	 = '2048';
+			$config['max_height']	 = '2048';
+
+			$this->load->library('upload', $config);
+
 			// Add a new
 			if ($this->uri->total_segments() == 3):
 				$data['page']  = 'add_news';
@@ -64,8 +74,25 @@ class News extends CI_Controller {
 				$data['user_data'] = $this->functions->get_user_data();
 				$id_user = $data['user_data']['id_user'];
 
-				if ($this->form_validation->run() !== FALSE):
-					$this->model_news->create_news($title_news, $content_news, $state_news, $id_user);
+				if (!$this->upload->do_upload('image')):
+					$error = array($this->upload->display_errors());
+					$this->session->set_flashdata('alert', strip_tags($error['0'], 'p'));
+
+				elseif ($this->form_validation->run() !== FALSE):
+					$upload_data = $this->upload->data();
+					// Resize image
+					$config['image_library']  = 'gd2';
+					$config['source_image']	  = $upload_data["full_path"];
+					$config['create_thumb']	  = FALSE;
+					$config['new_image']	  = './assets/img/news/thumb/';
+					$config['maintain_ratio'] = TRUE;
+					$config['width']		  = 150;
+					$config['height']		  = 150;
+					$this->load->library('image_lib', $config);
+					$this->image_lib->resize();
+					$image_news = $upload_data['file_name'];
+
+					$this->model_news->create_news($title_news, $content_news, $image_news, $state_news, $id_user);
 					$this->session->set_flashdata('success', 'News "' . $title_news . '" ajoutée');
 					redirect(base_url(URL_HOME_NEWS));
 				endif;
@@ -80,13 +107,41 @@ class News extends CI_Controller {
 					$row 				  = $get_content->row();
 					$data['title_news']	  = $row->title_news;
 					$data['content_news'] = $row->content_news;
+					$data['image_news']   = $row->image_news;
 					$data['state_news']   = $row->state_news;
 					$data['cdate_news']   = $row->cdate_news;
 					$data['udate_news']   = $row->udate_news;
 					$data['title']		  = 'Modifier la news <em>' . $data['title_news'] . '</em>';
 
 					if($this->form_validation->run() !== FALSE):
-						$this->model_news->update_news($title_news, $content_news, $state_news, $id_news);
+
+						// If different image
+						if (!empty($_FILES['image']['name']) && $_FILES['image']['name'] !== $data['image_bg']):
+
+							if (!$this->upload->do_upload('image')):
+								$error = array($this->upload->display_errors());
+								$this->session->set_flashdata('alert', strip_tags($error['0'], 'p'));
+						
+							elseif ($this->upload->do_upload('image')):
+								$upload_data = $this->upload->data();
+								// Resize image
+								$config['image_library']  = 'gd2';
+								$config['source_image']	  = $upload_data["full_path"];
+								$config['create_thumb']	  = FALSE;
+								$config['new_image']	  = './assets/img/news/thumb/';
+								$config['maintain_ratio'] = TRUE;
+								$config['width']		  = 150;
+								$config['height']		  = 150;
+								$this->load->library('image_lib', $config);
+								$this->image_lib->resize();
+								$image_news = $upload_data['file_name'];
+							endif;
+
+						else:
+							$image_news = $data['image_news'];
+						endif;
+
+						$this->model_news->update_news($title_news, $content_news, $image_news, $state_news, $id_news);
 						$this->session->set_flashdata('success', 'News "' . $title_news . '" modifiée.');
 						redirect(base_url(URL_HOME_NEWS));
 					endif;
@@ -111,9 +166,9 @@ class News extends CI_Controller {
 
 			$get_content = $this->model_news->get_news($id_news);
 
-			// If new exist
+			// If new exists
 			if ($get_content->num_rows() == 1):
-				echo 'preview'.$id_news;
+				var_dump($get_content->row());
 			else:
 				$this->session->set_flashdata('alert', 'Cette news n\'existe pas ou n\'a jamais existé.');
 				redirect(URL_HOME_NEWS);

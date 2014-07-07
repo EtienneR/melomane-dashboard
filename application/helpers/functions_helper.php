@@ -21,7 +21,7 @@ if ( ! function_exists('img_thumb_song'))
 {
 	function img_thumb_song($file_name)
 	{
-		return '<img src="' . base_url('assets/img/song/thumb/' . $file_name) . '" alt="" />';
+		return '<img src="' . base_url('assets/img/song/thumb/' . $file_name) . '" alt="image" />';
 	}
 }
 
@@ -30,6 +30,14 @@ if ( ! function_exists('img_thumb_bg'))
 	function img_thumb_bg($file_name)
 	{
 		return '<img src="' . base_url('assets/img/bg/thumb/' . $file_name) . '" alt="" />';
+	}
+}
+
+if ( ! function_exists('img_thumb_news'))
+{
+	function img_thumb_news($file_name)
+	{
+		return '<img src="' . base_url('assets/img/news/thumb/' . $file_name) . '" alt="" />';
 	}
 }
 

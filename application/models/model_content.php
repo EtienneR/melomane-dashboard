@@ -96,7 +96,7 @@ class Model_content extends CI_Model {
 
 	function get_content($id_song, $title_song)
 	{
-		$this->db->select('id_song, title_song, artist_song, punchline_song, image_song, state_song, cdate_song, udate_song, id_soundcloud, pseudo_user, fk_id_user, fk_id_category, fk_id_bg');
+		$this->db->select('id_song, title_song, artist_song, punchline_song, image_song, vendor_song state_song, cdate_song, udate_song, id_soundcloud, pseudo_user, fk_id_user, fk_id_category, fk_id_bg');
 		$this->db->from('m_song');
 		$this->db->join('m_user', 'm_user.id_user = m_song.fk_id_user');
 		if (empty($c_title)):
@@ -121,7 +121,7 @@ class Model_content extends CI_Model {
 		return $query;
 	}
 
-	function check_title($id_song, $title_song)
+/*	function check_title($id_song, $title_song)
 	{
 		$this->db->select('title_song')
 				 ->from('m_song')
@@ -130,9 +130,20 @@ class Model_content extends CI_Model {
 
 		$query = $this->db->get();
 		return $query;
+	}*/
+
+	function check_id_soundcloud($id_song, $id_soundcloud)
+	{
+		$this->db->select('id_soundcloud')
+				 ->from('m_song')
+				 ->where('id_song <>', $id_song)
+				 ->where('id_soundcloud', $id_soundcloud);
+
+		$query = $this->db->get();
+		return $query;
 	}
 
-	function create_content($id_user, $title_song, $artist_song, $punchline_song, $image_song, $state_song, $cdate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category, $id_bg)
+	function create_content($id_user, $title_song, $artist_song, $punchline_song, $image_song, $vendor_song, $state_song, $cdate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category, $id_bg)
 	{
 		$data = array(
 			'fk_id_user'		  => $id_user,
@@ -140,6 +151,7 @@ class Model_content extends CI_Model {
 			'artist_song'		  => $artist_song,
 			'punchline_song'	  => $punchline_song,
 			'image_song'		  => $image_song,
+			'vendor_song'		  => $vendor_song,
 			'state_song'		  => $state_song,
 			'cdate_song'		  => $cdate_song,
 			'udate_song'		  => unix_to_human(now(), TRUE, 'eu'),
@@ -163,30 +175,37 @@ class Model_content extends CI_Model {
 		$this->db->insert('m_songtags', $data);
 	}
 	
-	function update_content($title_song, $artist_song, $punchline_song, $image_song, $state_song, $udate_song, $id_soundcloud, $id_category, $id_bg, $id_song)
+	function update_content($title_song, $artist_song, $punchline_song, $image_song, $vendor_song, $state_song, $udate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category, $id_bg, $id_song)
 	{
 		if ($udate_song === TRUE):
 			$data = array(
-				'title_song'	 => $title_song,
-				'artist_song'	 => $artist_song,
-				'image_song'	 => $image_song,
-				'punchline_song' => $punchline_song,
-				'state_song'	 => $state_song,
-				'udate_song'	 => unix_to_human(now(), TRUE, 'eu'),
-				'id_soundcloud'	 => $id_soundcloud,
-				'fk_id_category' => $id_category,
-				'fk_id_bg'		 => $id_bg
+				'title_song'		  => $title_song,
+				'artist_song'	 	  => $artist_song,
+				'punchline_song' 	  => $punchline_song,
+				'image_song'	 	  => $image_song,
+				'vendor_song'	 	  => $vendor_song,
+				'state_song'	 	  => $state_song,
+				'udate_song'	 	  => unix_to_human(now(), TRUE, 'eu'),
+				'id_soundcloud'	 	  => $id_soundcloud,
+				'url_soundcloud'	  => $url_soundcloud,
+				'duration_soundcloud' => $duration_soundcloud,
+				'id_soundcloud'	 	  => $id_soundcloud,
+				'fk_id_category'	  => $id_category,
+				'fk_id_bg'		 	  => $id_bg
 			);
 		else:
 			$data = array(
-				'title_song'	 => $title_song,
-				'artist_song'	 => $artist_song,
-				'punchline_song' => $punchline_song,
-				'image_song'	 => $image_song,
-				'state_song'	 => $state_song,
-				'id_soundcloud'	 => $id_soundcloud,
-				'fk_id_category' => $id_category,
-				'fk_id_bg'		 => $id_bg
+				'title_song'		  => $title_song,
+				'artist_song'		  => $artist_song,
+				'image_song'		  => $image_song,
+				'punchline_song'	  => $punchline_song,
+				'vendor_song'		  => $vendor_song,
+				'state_song'		  => $state_song,
+				'id_soundcloud'		  => $id_soundcloud,
+				'url_soundcloud'	  => $url_soundcloud,
+				'duration_soundcloud' => $duration_soundcloud,
+				'fk_id_category'	  => $id_category,
+				'fk_id_bg'			  => $id_bg
 			);
 		endif;
 

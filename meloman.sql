@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le: Lun 07 Juillet 2014 à 00:02
+-- Généré le: Lun 07 Juillet 2014 à 13:12
 -- Version du serveur: 5.6.12-log
 -- Version de PHP: 5.4.12
 
@@ -60,13 +60,14 @@ CREATE TABLE IF NOT EXISTS `m_news` (
   `id_news` int(11) NOT NULL AUTO_INCREMENT,
   `title_news` varchar(255) NOT NULL,
   `content_news` text NOT NULL,
+  `image_news` varchar(255) NOT NULL,
   `state_news` varchar(45) NOT NULL,
   `cdate_news` datetime DEFAULT NULL,
   `udate_news` datetime DEFAULT NULL,
   `fk_id_user` int(11) NOT NULL,
   PRIMARY KEY (`id_news`),
   KEY `fk_news_user1_idx` (`fk_id_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -110,12 +111,13 @@ CREATE TABLE IF NOT EXISTS `m_song` (
   `artist_song` varchar(255) NOT NULL,
   `punchline_song` varchar(255) NOT NULL,
   `image_song` varchar(255) NOT NULL,
+  `vendor_song` varchar(255) DEFAULT NULL,
   `state_song` int(11) NOT NULL COMMENT '0: brouillon; 1: publié',
   `cdate_song` datetime NOT NULL,
   `udate_song` datetime NOT NULL,
   `id_soundcloud` int(11) NOT NULL,
-  `url_soundcloud` varchar(255) DEFAULT NULL,
-  `duration_soundcloud` timestamp NULL DEFAULT NULL,
+  `url_soundcloud` varchar(255) NOT NULL,
+  `duration_soundcloud` int(11) NOT NULL,
   `fk_id_user` int(11) NOT NULL,
   `fk_id_category` int(11) NOT NULL,
   `fk_id_bg` int(11) NOT NULL,
@@ -123,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `m_song` (
   KEY `fk_song_user1_idx` (`fk_id_user`),
   KEY `fk_song_category1_idx` (`fk_id_category`),
   KEY `fk_m_song_m_bg1_idx` (`fk_id_bg`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=33 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=41 ;
 
 -- --------------------------------------------------------
 
@@ -138,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `m_songtags` (
   PRIMARY KEY (`id_songtags`),
   KEY `fk_m_songtags_m_song1_idx` (`fk_id_song`),
   KEY `fk_m_songtags_m_tag1_idx` (`fk_id_tag`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=55 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=74 ;
 
 -- --------------------------------------------------------
 

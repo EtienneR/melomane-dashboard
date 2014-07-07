@@ -15,7 +15,7 @@ class Model_news extends CI_Model {
 
 	function get_news($id_news)
 	{
-		$this->db->select('id_news, title_news, content_news, state_news, cdate_news, udate_news')
+		$this->db->select('id_news, title_news, image_news, content_news, state_news, cdate_news, udate_news')
 				 ->from('m_news')
 				 ->where('id_news', $id_news)
 				 ->limit(1);
@@ -45,13 +45,14 @@ class Model_news extends CI_Model {
 		return $query;
 	}
 
-	function create_news($title_news, $content_news, $state_news, $id_user)
+	function create_news($title_news, $content_news, $image_news, $state_news, $id_user)
 	{
 		$data = array(
 			'title_news'   => $title_news,
 			'content_news' => $content_news,
+			'image_news'   => $image_news,
 			'state_news'   => $state_news,
-			'user_id_user' => $id_user,
+			'fk_id_user'   => $id_user,
 			'cdate_news'   => unix_to_human(now(), TRUE, 'eu'),
 			'udate_news'   => unix_to_human(now(), TRUE, 'eu')
 		);
@@ -59,11 +60,12 @@ class Model_news extends CI_Model {
 		$this->db->insert('m_news', $data);
 	}
 
-	function update_news($title_news, $content_news, $state_news, $id_news)
+	function update_news($title_news, $content_news, $image_news, $state_news, $id_news)
 	{
 		$data = array(
 			'title_news'   => $title_news,
 			'content_news' => $content_news,
+			'image_news'   => $image_news,
 			'state_news'   => $state_news,
 			'udate_news'   => unix_to_human(now(), TRUE, 'eu')
 		);
