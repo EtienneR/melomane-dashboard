@@ -43,14 +43,14 @@ class Medias extends CI_Controller {
 			$data['categories']	= $this->functions->get_all_categories();
 			$data['tags']		= $this->functions->get_all_tags();
 
-			$this->form_validation->set_rules('tag_bg', 'Nom', 'trim|required');
-			$tag_bg = $this->input->post('tag_bg');
+/*			$this->form_validation->set_rules('tag_bg', 'Nom', 'trim|required');
+			$tag_bg = $this->input->post('tag_bg');*/
 
 			$config['upload_path']	 = './assets/img/bg/';
 			$config['allowed_types'] = 'gif|jpg|jpeg|png';
-			$config['max_size']		 = '1024';
+/*			$config['max_size']		 = '1024';
 			$config['max_width']	 = '2048';
-			$config['max_height']	 = '2048';
+			$config['max_height']	 = '2048';*/
 
 			$this->load->library('upload', $config);
 
@@ -63,7 +63,7 @@ class Medias extends CI_Controller {
 					$error = array($this->upload->display_errors());
 					$this->session->set_flashdata('alert', strip_tags($error['0'], 'p'));
 
-				elseif ($this->form_validation->run() !== FALSE):
+				else:
 					$upload_data = $this->upload->data();
 					// Resize image
 					$config['image_library']  = 'gd2';
@@ -77,8 +77,9 @@ class Medias extends CI_Controller {
 					$this->image_lib->resize();
 					$image_bg = $upload_data['file_name'];
 
-					$this->model_media->create_bg($tag_bg, $image_bg);
-					$this->session->set_flashdata('success', 'Tag "' . $tag_bg . '" ajouté');
+					$this->model_media->create_bg(/*$tag_bg, */$image_bg);
+					//$this->session->set_flashdata('success', 'Tag "' . $tag_bg . '" ajouté');
+					$this->session->set_flashdata('success', 'Background ajouté');
 					redirect(base_url(URL_HOME_MEDIAS));
 				endif;
 

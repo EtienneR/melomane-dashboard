@@ -102,7 +102,6 @@ class Content extends CI_Controller {
 						$obj = json_decode($ch);
 						$url_soundcloud 	 = $obj->{'permalink_url'};
 						$duration_soundcloud = $obj->{'duration'};
-						var_dump($duration_soundcloud);
 					endif;
 
 					// END SOUNDCLOUD API
@@ -181,7 +180,6 @@ class Content extends CI_Controller {
 							$obj = json_decode($ch);
 							$url_soundcloud 	 = $obj->{'permalink_url'};
 							$duration_soundcloud = $obj->{'duration'};
-							var_dump($duration_soundcloud);
 						endif;
 						// END SOUNDCLOUD API
 

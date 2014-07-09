@@ -4,7 +4,7 @@ class Model_media extends CI_Model {
 
 	function get_all_medias()
 	{
-		$this->db->select('id_bg, tag_bg, image_bg')
+		$this->db->select('id_bg, image_bg')
 				 ->from('m_bg')
 				 ->order_by('id_bg', 'DESC');
 
@@ -14,7 +14,7 @@ class Model_media extends CI_Model {
 
 	function get_media($id_bg)
 	{
-		$this->db->select('id_bg, tag_bg, image_bg')
+		$this->db->select('id_bg, image_bg')
 				 ->from('m_bg')
 				 ->where('id_bg', $id_bg)
 				 ->limit(1);
@@ -23,20 +23,18 @@ class Model_media extends CI_Model {
 		return $query;
 	}
 
-	function create_bg($tag_bg, $image_bg)
+	function create_bg($image_bg)
 	{
 		$data = array(
-			'tag_bg'   => $tag_bg,
 			'image_bg' => $image_bg
 		);
 
 		$this->db->insert('m_bg', $data);
 	}
 
-	function update_media($tag_bg, $image_bg, $id_bg)
+	function update_media($image_bg, $id_bg)
 	{
 		$data = array(
-			'tag_bg'   => $tag_bg,
 			'image_bg' => $image_bg
 		);
 

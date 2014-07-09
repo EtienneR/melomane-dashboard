@@ -49,6 +49,7 @@
 			<div class="col-md-12 form-group">
 				<p>Catégorie</p>
 				<?php foreach ($categories->result() as $row): ?>
+				<label for="<?php echo $row->title_category ;?>">
 				<input id="<?php echo $row->title_category ;?>" name="category" type="radio" value="<?php echo $row->id_category ;?>" <?php if ($page == 'edit_content' and isset($categories) and $row->id_category == $id_category or set_value('rubrique') == $row->id_category) echo 'checked="checked"'; ?> required />
 					<?php echo $row->title_category; ?>
 				</label>
@@ -122,7 +123,6 @@
 			<input type="radio" name="id_bg" id="<?php echo $row->id_bg; ?>" value="<?php echo $row->id_bg; ?>" <?php if ($page == 'edit_content' && isset($img_bg) && $row->id_bg == $id_bg) echo 'checked="checked"'; ?> />
 			<label for="<?php echo $row->id_bg; ?>">
 				<?php echo img_thumb_bg($row->image_bg); ?>
-				<br /><?php echo $row->tag_bg; ?>
 			</label>
 		<?php endforeach; ?>
 	</div><!-- end .form_control -->

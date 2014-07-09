@@ -4,7 +4,6 @@
 		<thead>
 			<tr>
 				<th>ID</th>
-				<th>Tag</th>
 				<th>Image</th>
 				<th>Nb articles</th>
 				<th></th>
@@ -16,11 +15,6 @@
 			<tr>
 				<td>
 					<?php echo $row->id_bg; ?>
-				</td>
-				<td>
-					<a href="<?php echo base_url('admin/medias/edit/' . $row->id_bg); ?>" title="Modifier">
-						<?php echo $row->tag_bg; ?>
-					</a>
 				</td>
 				<td>
 					<?php echo img_thumb_bg($row->image_bg); ?>

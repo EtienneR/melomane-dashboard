@@ -113,7 +113,7 @@ class Tag extends CI_Controller {
 
 				// No content attached to this tag
 				if ($this->model_content->get_content_by_tag($id_tag)->num_rows() == 0):
-					$this->model_tag->delete_category($id_tag);
+					$this->model_tag->delete_tag($id_tag);
 					$this->session->set_flashdata('success', 'Tag supprimé.');
 				// Content(s) attached to this tag
 				else:

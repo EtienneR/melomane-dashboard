@@ -3,11 +3,6 @@
 ?>
 
 	<div class="form-group">
-		<label for="tag_bg">Légende du background</label>
-		<input type="text" class="form-control" id="tag_bg" name="tag_bg" value="<?php if (isset($tag_bg)) echo $tag_bg; echo set_value('tag_bg'); ?>" />
-	</div><!-- end .form-group -->
-
-	<div class="form-group">
 		<?php if ($page == 'edit_bg'): ?>
 		<p>Image actuelle :
 			<br /><?php echo img_thumb_imag($image_bg); ?>

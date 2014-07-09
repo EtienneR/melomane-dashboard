@@ -47,7 +47,7 @@ class Category extends CI_Controller {
 			$data['tags']		= $this->functions->get_all_tags();
 
 			$this->form_validation->set_rules('title_category', 'Titre', 'trim|required|callback_check_category_title');
-			$this->form_validation->set_rules('description_category', 'Description', 'trim|required');
+			$this->form_validation->set_rules('description_category', 'Description', 'trim');
 
 			$title_category		  = $this->input->post('title_category');
 			$description_category = $this->input->post('description_category');
