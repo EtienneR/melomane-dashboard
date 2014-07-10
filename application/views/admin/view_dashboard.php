@@ -119,15 +119,16 @@
 					</a>
 				</p>
 				<ul class="list-unstyled">
-
-				<?php foreach ($categories->result() as $category): ?>
+					<?php foreach ($categories->result() as $category): ?>
 					<li>
 						<a href="<?php echo base_url('admin/content/c?q=' . $category->title_category); ?>">
 							<?php echo $category->title_category; ?>
 						</a>
 					</li>
-				<?php endforeach; ?>
+					<?php endforeach; ?>
 				</ul>
+				<?php else: ?>
+					<p><a href="<?php echo base_url('admin/tag/category'); ?>">Ajouter une catégorie</a>
 				<?php endif; ?>
 
 				<?php if (!empty($tags) && $tags->num_rows() > 0): ?>
@@ -275,7 +276,7 @@
 	</script>
 
 	<?php
-		if ($page == 'add_content'):
+		if ($page == 'add_content' or $page == 'edit_content' or $page == 'add_news' or $page == 'edit_news'):
 		echo js_url('bootstrap-datepicker');
 	?>
 

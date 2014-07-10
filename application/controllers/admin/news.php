@@ -55,6 +55,7 @@ class News extends CI_Controller {
 			$title_news   = $this->input->post('title_news');
 			$content_news = $this->input->post('content_news');
 			$state_news	  = $this->input->post('state_news');
+			$pdate_news	  = $this->input->post('pdate_news');
 
 			$config['upload_path']	 = './assets/img/news/';
 			$config['allowed_types'] = 'gif|jpg|jpeg|png';
@@ -74,11 +75,22 @@ class News extends CI_Controller {
 				$data['user_data'] = $this->functions->get_user_data();
 				$id_user = $data['user_data']['id_user'];
 
+
 				if (!$this->upload->do_upload('image')):
 					$error = array($this->upload->display_errors());
 					$this->session->set_flashdata('alert', strip_tags($error['0'], 'p'));
 
 				elseif ($this->form_validation->run() !== FALSE):
+
+					// No planned date
+					if (empty($pdate_news)):
+						$pdate_news = unix_to_human(now(), TRUE, 'eu');
+					endif;
+					//var_dump($pdate_news);
+					//$pdate_news = date_create($pdate_news);
+					//var_dump(date_format($pdate_news, 'Y-m-d H:i:s'));
+					//die();
+
 					$upload_data = $this->upload->data();
 					// Resize image
 					$config['image_library']  = 'gd2';
@@ -92,7 +104,7 @@ class News extends CI_Controller {
 					$this->image_lib->resize();
 					$image_news = $upload_data['file_name'];
 
-					$this->model_news->create_news($title_news, $content_news, $image_news, $state_news, $id_user);
+					$this->model_news->create_news($title_news, $content_news, $image_news, $state_news, $pdate_news, $id_user);
 					$this->session->set_flashdata('success', 'News "' . $title_news . '" ajoutée');
 					redirect(base_url(URL_HOME_NEWS));
 				endif;
@@ -111,6 +123,7 @@ class News extends CI_Controller {
 					$data['state_news']   = $row->state_news;
 					$data['cdate_news']   = $row->cdate_news;
 					$data['udate_news']   = $row->udate_news;
+					$data['pdate_news']   = $row->pdate_news;
 					$data['title']		  = 'Modifier la news <em>' . $data['title_news'] . '</em>';
 
 					if($this->form_validation->run() !== FALSE):
@@ -141,7 +154,7 @@ class News extends CI_Controller {
 							$image_news = $data['image_news'];
 						endif;
 
-						$this->model_news->update_news($title_news, $content_news, $image_news, $state_news, $id_news);
+						$this->model_news->update_news($title_news, $content_news, $image_news, $state_news, $pdate_news, $id_news);
 						$this->session->set_flashdata('success', 'News "' . $title_news . '" modifiée.');
 						redirect(base_url(URL_HOME_NEWS));
 					endif;

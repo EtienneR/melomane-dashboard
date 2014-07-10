@@ -34,6 +34,13 @@
 			<input type="file" name="image" size="20" />
 		</div><!-- end .form-group -->
 
+		<div id="datetimepicker" class="form-group">
+			<label for="pdate_news">Date planifiée :</label>
+			<input type="text" class="form-control" id="pdate_news" name="pdate_news" value="<?php
+				if (isset($pdate_news)) echo $pdate_news;
+				if (isset($_REQUEST['pdate_news'])) echo $_REQUEST['pdate_news'];  
+			?>" data-date-format="yyyy-mm-dd 00:00:00" />
+		</div><!-- end .form-group -->
 
 		<div class="form-group">
 			<label for="title_news">Titre de la news :</label>

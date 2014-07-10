@@ -9,6 +9,7 @@
 						<th>Contenu</th>
 						<th>Date de création</th>
 						<th>Date de modification</th>
+						<th>Date de planification</th>
 						<th>Etat</th>
 						<th></th>
 						<th></th>
@@ -42,6 +43,9 @@
 						<?php else: ?>
 						<td class="text-center">-</td>
 						<?php endif; ?>
+						<td>
+							<?php echo date("d/m/Y à H:i:s", strtotime($row->pdate_news)); ?>
+						</td>
 						<td>
 							<?php 
 							switch ($row->state_news) {

@@ -10,6 +10,7 @@ class Content extends CI_Controller {
 		$this->load->helper(array('file', 'form', 'functions', 'text'));
 		define('URL_LAYOUT'      , 'admin/view_dashboard');
 		define('URL_HOME_CONTENT', 'admin/content');
+		define('CLIENT_ID', 'f944e2e1605cbe1de67e7b3c54b3a808');
 		session_start();
 
 		if (isset($_GET["profiler"])):
@@ -50,8 +51,9 @@ class Content extends CI_Controller {
 			$data['tags']	   = $this->functions->get_all_tags();
 			$data['categories']= $this->functions->get_all_categories();
 
-			$this->form_validation->set_rules('id_soundcloud', 'ID Soundcloud', 'trim|required|numeric|callback_check_id_soundcloud');
+			//$this->form_validation->set_rules('id_soundcloud', 'ID Soundcloud', 'trim|required|numeric|callback_check_id_soundcloud');
 			//$this->form_validation->set_rules('title_song', 'Titre', 'trim|required|callback_check_content');
+			$this->form_validation->set_rules('url_soundcloud', 'URL soundcloud', 'required|callback_check_url_soundcloud');
 			$this->form_validation->set_rules('title_song', 'Titre', 'trim|required');
 			$this->form_validation->set_rules('artist_song', 'Artiste', 'trim|required');
 			$this->form_validation->set_rules('punchline_song', 'Punchline', 'trim|required');
@@ -60,26 +62,28 @@ class Content extends CI_Controller {
 			$this->form_validation->set_rules('category', 'Catégorie', 'required');
 			$this->form_validation->set_rules('id_bg', 'Image de fond', 'required');
 
-			$id_soundcloud	 = $this->input->post('id_soundcloud');
-			$title_song		 = $this->input->post('title_song');
-			$artist_song	 = $this->input->post('artist_song');
-			$punchline_song  = $this->input->post('punchline_song');
-			$vendor_song	 = $this->input->post('vendor_song');
-			$state_song		 = $this->input->post('state_song');
-			$cdate_song		 = $this->input->post('cdate_song');
-			$tag_song		 = $this->input->post('tag_song');
-			$id_soundcloud 	 = $this->input->post('id_soundcloud');
-			$id_category	 = $this->input->post('category');
-			$id_bg			 = $this->input->post('id_bg');
-			$userfile		 = $this->input->get_post('userfile');
+			//$id_soundcloud	 = $this->input->post('id_soundcloud');
+			$title_song		= $this->input->post('title_song');
+			$artist_song	= $this->input->post('artist_song');
+			$punchline_song = $this->input->post('punchline_song');
+			$vendor_song	= $this->input->post('vendor_song');
+			$state_song		= $this->input->post('state_song');
+			$cdate_song		= $this->input->post('cdate_song');
+			$pdate_song		= $this->input->post('pdate_song');
+			$tag_song		= $this->input->post('tag_song');
+			//$id_soundcloud 	 = $this->input->post('id_soundcloud');
+			$url_soundcloud	= $this->input->post('url_soundcloud');
+			$id_category	= $this->input->post('category');
+			$id_bg			= $this->input->post('id_bg');
+			$userfile		= $this->input->get_post('userfile');
 
 			$data['img_bg'] = $this->model_content->get_all_bg_image();
 
 			$config['upload_path']	 = './assets/img/song/';
 			$config['allowed_types'] = 'gif|jpg|jpeg|png';
-			$config['max_size']		 = '1024';
-			$config['max_width']	 = '2048';
-			$config['max_height']	 = '2048';
+			//$config['max_size']	 = '1024';
+			//$config['max_width']	 = '2048';
+			//$config['max_height']	 = '2048';
 
 			$this->load->library('upload', $config);
 
@@ -95,25 +99,21 @@ class Content extends CI_Controller {
 					$this->session->set_flashdata('alert', strip_tags($error['0'], 'p'));
 
 				elseif ($this->form_validation->run() !== FALSE):
+					// No planned date
+					if (empty($pdate_news)):
+						$pdate_news = unix_to_human(now(), TRUE, 'eu');
+					endif;
+					var_dump($pdate_news);
+					die();
 
-					// BEGIN SOUNDCLOUD API
-					if (!empty($id_soundcloud)):
-						$ch = file_get_contents('http://api.soundcloud.com/tracks/'. $id_soundcloud .'.json?client_id=f944e2e1605cbe1de67e7b3c54b3a808');
-						$obj = json_decode($ch);
-						$url_soundcloud 	 = $obj->{'permalink_url'};
+					if (!empty($url_soundcloud)):
+						$url  = $this->api_soundcloud($url_soundcloud);
+						$api 				 = file_get_contents($url);
+						$obj 				 = json_decode($api);
+						$id_soundcloud		 = $obj->{'id'};
 						$duration_soundcloud = $obj->{'duration'};
 					endif;
 
-					// END SOUNDCLOUD API
-
-
-
-/*					if (empty($cdate_song)):
-						echo 'vide';
-					else:
-						var_dump($cdate_song);
-					endif;
-					die;*/
 					$upload_data = $this->upload->data();
 					// Resize image
 					$config['image_library']  = 'gd2';
@@ -127,12 +127,11 @@ class Content extends CI_Controller {
 					$this->image_lib->resize();
 					$image_song = $upload_data['file_name'];
 
-
 					if (empty($cdate_song)):
 						$cdate_song = unix_to_human(now(), TRUE, 'eu');
 					endif;
 
-					$this->model_content->create_content($id_user, $title_song, $artist_song, $punchline_song, $image_song, $vendor_song, $state_song, $cdate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category, $id_bg);
+					$this->model_content->create_content($id_user, $title_song, $artist_song, $punchline_song, $image_song, $vendor_song, $state_song, $pdate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category, $id_bg);
 
 					// For tags
 					$id_song = $this->db->insert_id();
@@ -165,29 +164,31 @@ class Content extends CI_Controller {
 					$data['artist_song']   = $row->artist_song;
 					$data['punchline_song']= $row->punchline_song;
 					$data['image_song']	   = $row->image_song;
-					$data['vendor_song']	   = $row->vendor_song;
+					$data['vendor_song']   = $row->vendor_song;
+					$data['pdate_song']    = $row->pdate_song;
 					$data['state_song']	   = $row->state_song;
-					$data['id_soundcloud'] = $row->id_soundcloud;
+					$data['url_soundcloud']= $row->url_soundcloud;
 					$data['id_category']   = $row->fk_id_category;
 					$data['id_bg']		   = $row->fk_id_bg;
 					$data['title']		   = 'Modifier la musique <em>' . $data['title_song'] . '</em>';
 
 					if ($this->form_validation->run() !== FALSE):
 
-						// BEGIN SOUNDCLOUD API
-						if (!empty($data['id_soundcloud'])):
-							$ch = file_get_contents('http://api.soundcloud.com/tracks/'. $id_soundcloud .'.json?client_id=f944e2e1605cbe1de67e7b3c54b3a808');
-							$obj = json_decode($ch);
-							$url_soundcloud 	 = $obj->{'permalink_url'};
+						if (!empty($url_soundcloud)):
+							$url  				 = $this->api_soundcloud($url_soundcloud);
+							$api 				 = file_get_contents($url);
+							$obj 				 = json_decode($api);
+							$id_soundcloud		 = $obj->{'id'};
 							$duration_soundcloud = $obj->{'duration'};
 						endif;
-						// END SOUNDCLOUD API
-
+	
 						// If different image
-						if (!empty($_FILES['image']['name']) && $_FILES['image']['name'] !== $data['image_bg']):
+						if (!empty($_FILES['image']['name']) && $_FILES['image']['name'] !== $data['image_song']):
+
 							if (!$this->upload->do_upload('image')):
 								$error = array($this->upload->display_errors());
 								$this->session->set_flashdata('alert', strip_tags($error['0'], 'p'));
+
 							elseif ($this->upload->do_upload('image')):
 								$upload_data = $this->upload->data();
 								// Resize image
@@ -206,7 +207,7 @@ class Content extends CI_Controller {
 							$image_song = $data['image_song'];
 						endif;
 
-						$this->model_content->update_content($title_song, $artist_song, $punchline_song, $image_song, $vendor_song, $state_song, $udate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category, $id_bg, $id_song);
+						$this->model_content->update_content($title_song, $artist_song, $punchline_song, $image_song, $vendor_song, $state_song, $udate_song, $pdate_song, $id_soundcloud, $url_soundcloud, $duration_soundcloud, $id_category, $id_bg, $id_song);
 
 						// For tags
 						$this->model_content->delete_content_songtags($id_song);
@@ -263,6 +264,34 @@ class Content extends CI_Controller {
 		endif;
 	}
 
+	public function check_url_soundcloud($url_soundcloud){
+
+		$c_id = $this->uri->segment(4);
+		$url  = $this->api_soundcloud($url_soundcloud);
+		$api  = @file_get_contents($url);
+
+		if (!filter_var($url_soundcloud, FILTER_VALIDATE_URL)):
+			$this->form_validation->set_message('check_url_soundcloud', 'L\'url Soundcloud doit être une URL valide');
+			return FALSE;
+
+		elseif ($api == FALSE):
+			$this->form_validation->set_message('check_url_soundcloud', $url_soundcloud . ' mauvaise URL Soundcloud');
+			return FALSE;
+
+		elseif ($this->model_content->check_url_soundcloud($c_id, $url_soundcloud)->num_rows() >= 1):
+			$this->form_validation->set_message('check_url_soundcloud', 'Impossible de rajouter ou modifier la musique avec cet URL soundcloud "' . $url_soundcloud . '" car ce dernier existe déjà.');
+			return FALSE;
+
+		else:
+			return TRUE;
+		endif;
+	}
+
+	private function api_soundcloud($url_soundcloud)
+	{
+		$url = 'http://api.soundcloud.com/resolve.json?url=' . $url_soundcloud . '&client_id=' . CLIENT_ID;
+		return $url;
+	}
 
 	// Delete a content
 	public function delete($id = '')
